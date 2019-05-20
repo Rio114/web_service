@@ -4,7 +4,22 @@
     <input type="file" id="img_file" name="img_file" class="col-sm-4">
     <input type="submit" value="send" class="btn">
 </form>
-    {% if img_url %}
-<p><img src="{{ img_url }}"></p>
+
+    <!-- {% if img_url[0] %}
+<p><img src="{{ img_url[0] }}"></p>
     {% endif %}
+
+    {% if img_url[1] %}
+<p><img src="{{ img_url[1] }}"></p>
+    {% endif %}
+
+ -->
+
+{% for img in img_url %}
+    {% if img %}
+<p><img src="{{ img }}"></p>
+    {% endif %}
+
+{% endfor %}
+
 {% endblock %}

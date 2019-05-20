@@ -5,7 +5,11 @@ import sys
 from werkzeug import secure_filename
 import sqlite3
 from contextlib import closing
+from handle_db import db_save_image
+import os
+
 db_name = 'database.db'
+OUTPUT_FOLDER = './outputs'
 
 def face_rect_out(image_path, cascade_path, output_path):
 
@@ -23,27 +27,33 @@ def face_rect_out(image_path, cascade_path, output_path):
 
     # 検出した場合
     if len(facerect) > 0:
-        color = (255, 0, 255) #白
+        color = (255, 0, 255) 
         #検出した顔を囲む矩形の作成
         rect_data = []
+        trimmed_images = []
+        trimmed_image_url = []
+        for i, rect in enumerate(facerect):
+            xmin = rect[0]
+            ymin = rect[1]
+            xmax = rect[0]+rect[2]
+            ymax = rect[1]+rect[3]
+            trimmed = image[ymin:ymax, xmin:xmax, :] 
+            trimmed_images.append(trimmed)
+            url = os.path.join(OUTPUT_FOLDER, '{}.jpg'.format(i))
+            trimmed_image_url.append(url)
+            cv2.imwrite(url, trimmed)
+
         for rect in facerect:
-            cv2.rectangle(image, tuple(rect[0:2]),tuple(rect[0:2]+rect[2:4]), color, thickness=2)
-            rect_data.append((image_path.split('/')[-1], int(rect[0]), int(rect[1]), int(rect[2]), int(rect[3])))
+            cv2.rectangle(image, tuple(rect[0:2]),tuple(rect[0:2]+rect[2:4]), color, thickness=2) 
+            rect_data.append((image_path.split('/')[-1], int(xmin), int(ymin), int(xmin-xmax), int(ymin-ymax)))
 
         #認識結果の保存
-        with closing(sqlite3.connect(db_name)) as conn:
-            c = conn.cursor()
-            create_table = '''CREATE TABLE IF NOT EXISTS images (id integer primary key, file_name varchar(64), x_pos int, y_pos int, width int, hight int)'''
-            c.execute(create_table)
-            insert_sql = 'INSERT INTO images (file_name, x_pos, y_pos, width, hight) values (?, ?, ?, ?, ?)'
-            c.executemany(insert_sql, rect_data)
-            conn.commit()
+        db_save_image(rect_data)
 
-            select_sql = 'SELECT * FROM images'
-            for row in c.execute(select_sql):
-                print(row)
     #認識結果の保存
     cv2.imwrite(output_path, image)
+    return trimmed_image_url
+
 
 if __name__ == "__main__":
     #image_path = "test0.jpg"
