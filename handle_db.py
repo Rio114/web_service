@@ -13,9 +13,9 @@ def db_save_image(rect_data):
         c.executemany(insert_sql, rect_data)
         conn.commit()
 
-    # select_sql = 'SELECT * FROM images'
-    # for row in c.execute(select_sql):
-    #     print(row)
+        # select_sql = 'SELECT * FROM images'
+        # for row in c.execute(select_sql):
+        #     print(row)
 
 
 # with closing(sqlite3.connect(db_name)) as conn:
