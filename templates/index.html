@@ -1,14 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
+
 <form method="POST" action="/send" enctype="multipart/form-data">
     <input type="file" id="img_file" name="img_file" class="col-sm-4">
     <input type="submit" value="send" class="btn">
 </form>
+
 {% if img_url %}
-    {% for img in img_url %}
+<p><img src="{{ img_url }}"></p>
+{% endif %}
+
+{% if trimmed_list %}
+    {% for img in trimmed_list %}
         {% if img %}
-            <p><img src="{{ img }}"></p>
+        <form name="download" action="/pick" method="POST">
+            <input type="hidden" name="img_file" value="{{ img }}">
+        </form>
+        <a href="/pick" onclick="document.download.submit();return false;">
+            <img src="{{ img }}" alt="detected image">
+        </a>
         {% endif %}
     {% endfor %}
 {% endif %}
+
 {% endblock %}

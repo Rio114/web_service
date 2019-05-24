@@ -21,6 +21,7 @@ def index():
 
 @app.route('/send', methods=['GET', 'POST'])
 def send():
+    print(request)
     if request.method == 'POST':
         img_file = request.files['img_file']
         if img_file and allowed_file(img_file.filename):
@@ -29,12 +30,24 @@ def send():
             uploaded_img = os.path.join(UPLOAD_FOLDER, filename)
             img_url = os.path.join(OUTPUT_FOLDER, filename)
             trimmed_img_url = face_rect_out(uploaded_img, CASCADE, img_url)
-            url_list = [img_url]
-            url_list.extend(trimmed_img_url)
-            return render_template('index.html', img_url=url_list)
+            trimmed_list = []
+            trimmed_list.extend(trimmed_img_url)
+            return render_template('index.html', img_url=img_url, trimmed_list=trimmed_list)
         else:
             return ''' <p> its extension is not allowed.</p> '''
-        
+
+@app.route('/pick', methods=['GET', 'POST'])
+def pick():
+    if request.method == 'POST':
+        img_file = request.form['img_file']
+        if img_file:
+            filename = img_file.split('/')[-1]  #secure_filename(img_file.filename)
+            img_url = os.path.join(OUTPUT_FOLDER, filename)
+            return render_template('index.html', img_url=img_url)
+    return render_template('index.html', img_url=img_url)
+        # else:
+        #     return ''' <p> its extension is not allowed.</p> '''
+
 @app.route('/outputs/<filename>')
 def uploaded_file(filename):
     return send_from_directory(OUTPUT_FOLDER, filename)
