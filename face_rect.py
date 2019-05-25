@@ -25,13 +25,14 @@ def face_rect_out(image_path, cascade_path, output_path):
     cascade = cv2.CascadeClassifier(cascade_path)
     facerect = cascade.detectMultiScale(image_gray, scaleFactor=1.1, minNeighbors=2, minSize=(50, 50))
 
+    trimmed_image_url = []
     # 検出した場合
     if len(facerect) > 0:
         color = (255, 0, 255) 
         #検出した顔を囲む矩形の作成
         rect_data = []
         trimmed_images = []
-        trimmed_image_url = []
+        original_img_name = image_path.split('/')[-1].split('.')[0]
         for i, rect in enumerate(facerect):
             xmin = rect[0]
             ymin = rect[1]
@@ -39,7 +40,7 @@ def face_rect_out(image_path, cascade_path, output_path):
             ymax = rect[1]+rect[3]
             trimmed = image[ymin:ymax, xmin:xmax, :] 
             trimmed_images.append(trimmed)
-            url = os.path.join(OUTPUT_FOLDER, '{}.jpg'.format(i))
+            url = os.path.join(OUTPUT_FOLDER, original_img_name+'_{}.jpg'.format(i))
             trimmed_image_url.append(url)
             cv2.imwrite(url, trimmed)
 

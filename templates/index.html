@@ -6,21 +6,12 @@
     <input type="submit" value="send" class="btn">
 </form>
 
-{% if img_url %}
-<p><img src="{{ img_url }}"></p>
+{% if message %}
+<p>{{ message }}</p>
 {% endif %}
 
-{% if trimmed_list %}
-    {% for img in trimmed_list %}
-        {% if img %}
-        <form name="download" action="/pick" method="POST">
-            <input type="hidden" name="img_file" value="{{ img }}">
-        </form>
-        <a href="/pick" onclick="document.download.submit();return false;">
-            <img src="{{ img }}" alt="detected image">
-        </a>
-        {% endif %}
-    {% endfor %}
+{% if img_url %}
+<p><img src="{{ img_url }}"></p>
 {% endif %}
 
 {% endblock %}

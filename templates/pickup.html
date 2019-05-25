@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form method="POST" action="/send" enctype="multipart/form-data">
+    <input type="file" id="img_file" name="img_file" class="col-sm-4">
+    <input type="submit" value="send" class="btn">
+</form>
+
+{% if img_url %}
+<p><img src="{{ img_url }}"></p>
+{% endif %}
+
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
+
+{% if trimmed_list %}
+    {% for img in trimmed_list %}
+        <form name="trimmed_{{loop.index}}" action="/pick" method="POST">
+            <input type="hidden" name="trimmed_img" value="{{ img }}">
+        </form>
+        <a href="/pick" onclick="document.trimmed_{{loop.index}}.submit();return false;">
+            <img src="{{ img }}" alt="detected image">
+        </a>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
